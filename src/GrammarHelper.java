@@ -125,7 +125,6 @@ class Grammar{
         Rule current = null;
         ArrayList<String> f = new ArrayList<String>();
         HashSet<String> hs = new HashSet<String>();
-        ArrayList<Integer> empty = new ArrayList<Integer>();
 
         //Find the transition we want to work with
         for(Rule rule : rules){
@@ -143,7 +142,7 @@ class Grammar{
         //Go through each partition and add terminals to the firstset
         for(int i = 0; i < current.getProductionArray().size(); i++){
 
-            Boolean flag = true;
+            int empty = 0;
 
             for(int j = 0; j < current.getProductionArray().get(i).length(); j++){
 
@@ -170,11 +169,17 @@ class Grammar{
 
                     //If the nonterminal has an empty string proceed to the next item
                     if((getFirsts(current.getProductionArray().get(i).charAt(j) + "").contains("@"))){
-
+                        //Remove @ from hs
+                        hs.remove("@");
+                        empty++;
                     }
                     else{
                         break;
                     }
+                }
+
+                if(empty == current.getProductionArray().get(i).length()){
+                    hs.add("@");
                 }
 
             }

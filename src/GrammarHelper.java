@@ -67,6 +67,7 @@ class Grammar{
     //Decs
     ArrayList<Rule> rules = new ArrayList<Rule>();
 
+
     public Grammar(){
 
     }
@@ -98,7 +99,50 @@ class Grammar{
 
     public ArrayList<String> getFirsts(){
 
+        ArrayList<FirstSet> firsts = new ArrayList<FirstSet>();
 
+        for(int i = 0; i < rules.size(); i++){
+
+            FirstSet f = new FirstSet(rules.get(i).getTransition());
+
+
+
+            firsts.add(f);
+        }
+
+        return null;
+    }
+
+    private ArrayList<String> getFirsts(String t){
+
+        Rule current = null;
+        ArrayList<String> f = new ArrayList<String>();
+
+        //Find the transition we want to work with
+        for(Rule rule : rules){
+            if(rule.getTransition().equals(t)){
+                current = rule;
+            }
+        }
+
+        if(current == null){
+            return f;
+        }
+
+        //Go through each partition and add terminals to the firstset
+        for(int i = 0; i < current.getProductionArray().size(); i++){
+            for(int j = 0; j < current.getProductionArray().get(i).length(); j++){
+
+                //If terminal, add it then break,
+                if(!isNonTerminal(current.getProductionArray().get(i).charAt(j) + "")){
+                    f.add(current.getProductionArray().get(i).charAt(j) + "");
+                }
+                else{
+
+                }
+
+            }
+        }
 
         return null;
     }
@@ -137,6 +181,10 @@ class Rule{
         return productions.toString();
     }
 
+    public ArrayList<String> getProductionArray(){
+        return productions;
+    }
+
     public String toString(){
 
         String t = "";
@@ -150,6 +198,32 @@ class Rule{
         }
 
         return transition + " -> " + t;
+    }
+
+}
+
+class FirstSet{
+
+    //Dec
+    String nonTerminal;
+    ArrayList<String> firsts = new ArrayList<String>();
+
+    public FirstSet(){
+
+    }
+
+    public FirstSet(String s){
+        nonTerminal = s;
+    }
+
+    public void addFirst(String s){
+        if(!firsts.contains(s)){
+            firsts.add(s);
+        }
+    }
+
+    public boolean contains(String s){
+        return firsts.contains(s);
     }
 
 }

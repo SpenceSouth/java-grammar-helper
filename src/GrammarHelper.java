@@ -24,6 +24,12 @@ public class GrammarHelper {
 
         System.out.println(grammar.toString());
 
+        System.out.println("\n\nFirsts:");
+
+        for(FirstSet fs : grammar.getFirsts()){
+            System.out.println(fs.toString());
+        }
+
     }
 
 
@@ -97,26 +103,22 @@ class Grammar{
         return false;
     }
 
-    public ArrayList<String> getFirsts(){
+    public ArrayList<FirstSet> getFirsts(){
 
-        ArrayList<FirstSet> firsts = new ArrayList<FirstSet>();
+        ArrayList<FirstSet> fs = new ArrayList<FirstSet>();
 
-        for(int i = 0; i < rules.size(); i++){
-
-            FirstSet f = new FirstSet(rules.get(i).getTransition());
-
-
-
-            firsts.add(f);
+        for(Rule rule : rules){
+            fs.add(new FirstSet(rule.getTransition(), getFirsts(rule.getTransition())));
         }
 
-        return null;
+        return fs;
     }
 
     private ArrayList<String> getFirsts(String t){
 
         Rule current = null;
         ArrayList<String> f = new ArrayList<String>();
+        ArrayList<Integer> empty = new ArrayList<Integer>();
 
         //Find the transition we want to work with
         for(Rule rule : rules){
@@ -129,6 +131,8 @@ class Grammar{
             return f;
         }
 
+        //System.out.println("Working with " + current.getTransition());
+
         //Go through each partition and add terminals to the firstset
         for(int i = 0; i < current.getProductionArray().size(); i++){
             for(int j = 0; j < current.getProductionArray().get(i).length(); j++){
@@ -136,15 +140,35 @@ class Grammar{
                 //If terminal, add it then break,
                 if(!isNonTerminal(current.getProductionArray().get(i).charAt(j) + "")){
                     f.add(current.getProductionArray().get(i).charAt(j) + "");
+                    empty.add(1);
+
+                    break;
+
                 }
                 else{
+                    //Check the first of the nonterminal
+                    //f.addAll(getFirsts(current.getProductionArray().get(i).charAt(j) + ""));
 
+                    for(String s : getFirsts(current.getProductionArray().get(i).charAt(j) + "")){
+                        if(!f.contains(s)){
+                            f.add(s);
+                        }
+                    }
+
+                    //If the nonterminal has an empty string proceed to the next item
+                    if((getFirsts(current.getProductionArray().get(i).charAt(j) + "").contains("@"))){
+                        empty.add(0);
+                    }
+                    else{
+                        //empty.add(1);
+                        break;
+                    }
                 }
 
             }
         }
 
-        return null;
+        return f;
     }
 
 }
@@ -216,6 +240,11 @@ class FirstSet{
         nonTerminal = s;
     }
 
+    public FirstSet(String s, ArrayList<String> firsts){
+        nonTerminal = s;
+        this.firsts = firsts;
+    }
+
     public void addFirst(String s){
         if(!firsts.contains(s)){
             firsts.add(s);
@@ -224,6 +253,10 @@ class FirstSet{
 
     public boolean contains(String s){
         return firsts.contains(s);
+    }
+
+    public String toString(){
+        return nonTerminal + " = " + firsts;
     }
 
 }

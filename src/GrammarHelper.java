@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Created by Spence on 2/19/2015.
@@ -107,8 +108,13 @@ class Grammar{
 
         ArrayList<FirstSet> fs = new ArrayList<FirstSet>();
 
-        for(Rule rule : rules){
-            fs.add(new FirstSet(rule.getTransition(), getFirsts(rule.getTransition())));
+        try {
+            for (Rule rule : rules) {
+                fs.add(new FirstSet(rule.getTransition(), getFirsts(rule.getTransition())));
+            }
+        }
+        catch(StackOverflowError sofe){
+            System.out.println("This is not LL(1) parseable");
         }
 
         return fs;
@@ -118,6 +124,7 @@ class Grammar{
 
         Rule current = null;
         ArrayList<String> f = new ArrayList<String>();
+        HashSet<String> hs = new HashSet<String>();
         ArrayList<Integer> empty = new ArrayList<Integer>();
 
         //Find the transition we want to work with
@@ -135,12 +142,15 @@ class Grammar{
 
         //Go through each partition and add terminals to the firstset
         for(int i = 0; i < current.getProductionArray().size(); i++){
+
+            Boolean flag = true;
+
             for(int j = 0; j < current.getProductionArray().get(i).length(); j++){
 
                 //If terminal, add it then break,
                 if(!isNonTerminal(current.getProductionArray().get(i).charAt(j) + "")){
-                    f.add(current.getProductionArray().get(i).charAt(j) + "");
-                    empty.add(1);
+//                    f.add(current.getProductionArray().get(i).charAt(j) + "");
+                    hs.add(current.getProductionArray().get(i).charAt(j) + "");
 
                     break;
 
@@ -150,24 +160,28 @@ class Grammar{
                     //f.addAll(getFirsts(current.getProductionArray().get(i).charAt(j) + ""));
 
                     for(String s : getFirsts(current.getProductionArray().get(i).charAt(j) + "")){
-                        if(!f.contains(s)){
+                        /*if(!f.contains(s)){
                             f.add(s);
+                        }*/
+                        if(!hs.contains(s)){
+                            hs.add(s);
                         }
                     }
 
                     //If the nonterminal has an empty string proceed to the next item
                     if((getFirsts(current.getProductionArray().get(i).charAt(j) + "").contains("@"))){
-                        empty.add(0);
+
                     }
                     else{
-                        //empty.add(1);
                         break;
                     }
                 }
 
             }
+
         }
 
+        f.addAll(hs);
         return f;
     }
 

@@ -253,13 +253,14 @@ class Grammar{
                                 hs.addAll(temp);
 
                                 //TODO: Something needs to happen here to address transitions that can go away
-                                while(getFirsts(p.charAt(j + count) + "").contains("@")){
+                                //TODO: Needs to check and see that there is one more spot in the string to look ahead at
+                                while(getFirsts(p.charAt(j + count) + "").contains("@") && ((j + count) < current.getProductionArray().get(i).length())){
 
                                     if(j+count == p.length()-1) break;
 
                                     System.out.println("Working with " + s + " looking at " + p.charAt(count+1));
 
-                                    temp = getFirsts(p.charAt(j + count++) + "");
+                                    temp = getFirsts(p.charAt(j + ++count) + "");
                                     temp.remove("@");
                                     hs.addAll(temp);
 

@@ -31,6 +31,12 @@ public class GrammarHelper {
             System.out.println(fs.toString());
         }
 
+        System.out.println("\n\nFollows:");
+
+        for(FollowSet fs : grammar.getFollows()){
+            System.out.println(fs.toString());
+        }
+
     }
 
 
@@ -190,6 +196,104 @@ class Grammar{
         return f;
     }
 
+    public ArrayList<FollowSet> getFollows(){
+
+        int count = 0;
+
+        //Generate followset for each non-terminal and do pass 1
+        ArrayList<FollowSet> fs = new ArrayList<FollowSet>();
+        for(Rule rule : rules){
+            FollowSet temp = new FollowSet(rule.getTransition());
+            temp.firsts.addAll(getFollowsPass1(rule.getTransition()));
+            if(count++ == 0){
+                temp.firsts.add("$");
+            }
+            fs.add(temp);
+        }
+
+        return fs;
+    }
+
+    private HashSet<String> getFollowsPass1(String s){
+
+        Rule current = null;
+        HashSet<String> hs = new HashSet<String>();
+
+
+        //Go through each rule
+        for(int k = 0; k < rules.size(); k++) {
+
+            current = rules.get(k);
+
+            //Look at the partitions of each transition rule
+            for (int i = 0; i < current.getProductionArray().size(); i++) {
+
+                //Go through each partition character by character looking at the follows
+                for (int j = 0; j < current.getProductionArray().get(i).length(); j++) {
+                    String p = current.getProductionArray().get(i);
+
+                    //If it is a terminal then we can move on
+                    if (!isNonTerminal(p.charAt(j) + "")) {
+                        continue;
+                    }
+                    //If is is a transition
+                    else if (isNonTerminal(p.charAt(j) + "") && (j != p.length() - 1)) {
+
+                        //Check to see what comes after the transition
+                        if (isNonTerminal(p.charAt(j + 1) + "")) {
+
+                            if(s.equals(p.charAt(j) + "")) {
+
+                                System.out.println("Working with " + s + " looking at " + p.charAt(j+1));
+
+                                int count = 1;
+
+                                ArrayList<String> temp = getFirsts(p.charAt(j + 1) + "");
+                                temp.remove("@");
+                                hs.addAll(temp);
+
+                                //TODO: Something needs to happen here to address transitions that can go away
+                                while(getFirsts(p.charAt(j + count) + "").contains("@")){
+
+                                    if(j+count == p.length()-1) break;
+
+                                    System.out.println("Working with " + s + " looking at " + p.charAt(count+1));
+
+                                    temp = getFirsts(p.charAt(j + count++) + "");
+                                    temp.remove("@");
+                                    hs.addAll(temp);
+
+                                }
+
+
+                            }
+
+                            if (!(getFirsts(p.charAt(j + 1) + "")).contains("@")) {
+                                break;
+                            }
+
+                        }
+                        else {
+                            if(s.equals(p.charAt(j) + "")) {
+                                //System.out.println(s + " equals " + p.charAt(j) + ". Next character is " + p.charAt(j+1));
+                                hs.add(p.charAt(j + 1) + "");
+                            }
+                            else{
+                                //System.out.println(s + " did not equal " + p.charAt(j));
+                            }
+                            break;
+                        }
+
+                    }
+
+                }
+            }
+        }
+
+
+        return hs;
+    }
+
 }
 
 class Rule{
@@ -276,6 +380,18 @@ class FirstSet{
 
     public String toString(){
         return nonTerminal + " = " + firsts;
+    }
+
+}
+
+class FollowSet extends FirstSet{
+
+    public FollowSet(){
+
+    }
+
+    public FollowSet(String s){
+        nonTerminal = s;
     }
 
 }

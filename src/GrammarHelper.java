@@ -244,8 +244,6 @@ class Grammar{
 
                             if(s.equals(p.charAt(j) + "")) {
 
-                                System.out.println("Working with " + s + " looking at " + p.charAt(j+1));
-
                                 int count = 1;
 
                                 ArrayList<String> temp = getFirsts(p.charAt(j + 1) + "");
@@ -257,8 +255,6 @@ class Grammar{
                                 while(getFirsts(p.charAt(j + count) + "").contains("@") && ((j + count) < current.getProductionArray().get(i).length())){
 
                                     if(j+count == p.length()-1) break;
-
-                                    System.out.println("Working with " + s + " looking at " + p.charAt(count+1));
 
                                     temp = getFirsts(p.charAt(j + ++count) + "");
                                     temp.remove("@");
@@ -293,6 +289,49 @@ class Grammar{
 
 
         return hs;
+    }
+
+    private HashSet<String> getFollowsPass2(String s, ArrayList<FollowSet> fs){
+
+        //Remember to loop around to keep checking each follows until nothing changes
+        boolean modified = false;
+        String partition;
+        Rule current;
+
+        do{
+
+            for(int i = 0; i < rules.size(); i++){
+                current = rules.get(i);
+
+                //Look at the partitions of each rule
+                for(int j = 0; j < current.getProductionArray().size(); j--){
+
+                    partition = current.getProductionArray().get(j);
+
+                    //Go through each string backwards
+                    for(int k = partition.length()-1; k > -1; k--){
+
+                        //If the string ends with a terminal then we can move on
+                        if(!isNonTerminal(partition.charAt(k) + "")){
+                            break;
+                        }
+                        //If not then it is a transition.
+                        else{
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        } while(modified);
+
+
+
+
+        return null;
     }
 
 }

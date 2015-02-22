@@ -36,6 +36,8 @@ public class GrammarHelper {
         for(FollowSet fs : grammar.getFollows()){
             System.out.println(fs.toString());
         }
+        
+        grammar.isLL1();
 
     }
 
@@ -217,6 +219,7 @@ class Grammar{
         return fs;
     }
 
+    /**Gets the follow set for a defined transition */
     private HashSet<String> getFollowsPass1(String s){
 
         Rule current = null;
@@ -235,11 +238,11 @@ class Grammar{
                 for (int j = 0; j < current.getProductionArray().get(i).length(); j++) {
                     String p = current.getProductionArray().get(i);
 
-                    //If it is a terminal then we can move on
+                    //If it is a terminal then we can move on. We are not looking for the follows of terminals.
                     if (!isNonTerminal(p.charAt(j) + "")) {
                         continue;
                     }
-                    //If is is a transition
+                    //If is is a transition then we need to record what follows it.
                     else if (isNonTerminal(p.charAt(j) + "") && (j != p.length() - 1)) {
 
                         //Check to see what comes after the transition
@@ -268,9 +271,10 @@ class Grammar{
 
                             }
 
-                            if (!(getFirsts(p.charAt(j + 1) + "")).contains("@")) {
+                            //TODO: This statement may not be necessary or may even be problematic
+                            /*if (!(getFirsts(p.charAt(j + 1) + "")).contains("@")) {
                                 break;
-                            }
+                            }*/
 
                         }
                         else {
@@ -281,7 +285,8 @@ class Grammar{
                             else{
                                 //System.out.println(s + " did not equal " + p.charAt(j));
                             }
-                            break;
+                            //TODO: Suspect follow issue is here
+                            //break;
                         }
 
                     }
@@ -361,6 +366,69 @@ class Grammar{
         } while(modified);
 
 
+    }
+    
+    public void isLL1(){
+        
+        //Get the first and followset
+        ArrayList<FirstSet> firstSet = getFirsts();
+        ArrayList<FollowSet> followSet = getFollows();
+        
+        //Check each partition of each rule
+        for(int i = 0; i < rules.size(); i++){
+            
+            Rule current = rules.get(i);
+            
+            //Look at each partition
+            for(int j = 0; j < current.getProductionArray().size(); j++){
+                
+                
+                
+            }
+            
+        }
+        
+    }
+    
+    private ArrayList<String> getFirstOfPartition(String partition){
+        
+        ArrayList<String> result = new ArrayList<String>();
+        HashSet<String> hs = new HashSet<String>();
+        boolean empty = true;
+        
+        for(int i = 0; i < partition.length(); i++){
+            if(!isNonTerminal(partition.charAt(i) + "")){
+                hs.add(partition.charAt(i) + "");
+                empty = false;
+                break;
+            }
+            //Dealing with nonterminals
+            else{
+
+                ArrayList<String> temp = getFirsts(partition.charAt(i) + "");
+                temp.remove("@");
+                hs.addAll(temp);
+                
+                //Get the first of the nonterminal
+                if(!getFirsts(partition.charAt(i) + "").contains("@")){
+                    //It can go away so we need to check the next character as well
+                    
+                }
+                else{
+                    empty = false;
+                    break;
+                }
+                
+            }
+        }
+        
+        if(empty){
+            hs.add("@");
+        }
+
+        result.addAll(hs);
+        
+        return result;
     }
 
 }

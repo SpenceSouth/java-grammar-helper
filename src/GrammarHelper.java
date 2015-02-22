@@ -211,6 +211,9 @@ class Grammar{
             fs.add(temp);
         }
 
+        //Do pass 2
+        getFollowsPass2(fs);
+
         return fs;
     }
 
@@ -291,25 +294,32 @@ class Grammar{
         return hs;
     }
 
-    private HashSet<String> getFollowsPass2(String s, ArrayList<FollowSet> fs){
+    private void getFollowsPass2(ArrayList<FollowSet> fs){
 
         //Remember to loop around to keep checking each follows until nothing changes
-        boolean modified = false;
+        boolean modified;
         String partition;
         Rule current;
 
         do{
 
+            modified = false;
+
             for(int i = 0; i < rules.size(); i++){
                 current = rules.get(i);
 
+                //Gets the follow set for the current rule
+                FollowSet f = fs.get(i);
+
                 //Look at the partitions of each rule
-                for(int j = 0; j < current.getProductionArray().size(); j--){
+                for(int j = 0; j < current.getProductionArray().size(); j++){
 
                     partition = current.getProductionArray().get(j);
 
                     //Go through each string backwards
                     for(int k = partition.length()-1; k > -1; k--){
+
+                        String endChar = partition.charAt(k) + "";
 
                         //If the string ends with a terminal then we can move on
                         if(!isNonTerminal(partition.charAt(k) + "")){
@@ -317,6 +327,28 @@ class Grammar{
                         }
                         //If not then it is a transition.
                         else{
+
+                            //What follows the current rule must follow the transition at the end of that partition.
+
+                            //Find the transition we want to work with
+                            FollowSet set = null;
+
+                            for(FollowSet temp : fs){
+                                if(temp.nonTerminal.equals(endChar)){
+                                    set = temp;
+                                }
+                            }
+
+                            //Add any follows from f to set.  Record if any modifications were made.
+                            if(set.add(f)){
+                                modified = true;
+                            }
+
+                            //If the current terminal can go away continue, else break
+                            if(!getFirsts(endChar).contains("@")){
+                                break;
+                            }
+
 
                         }
 
@@ -329,9 +361,6 @@ class Grammar{
         } while(modified);
 
 
-
-
-        return null;
     }
 
 }
@@ -408,10 +437,12 @@ class FirstSet{
         this.firsts = firsts;
     }
 
-    public void addFirst(String s){
+    public boolean add(String s){
         if(!firsts.contains(s)){
             firsts.add(s);
+            return true;
         }
+        return false;
     }
 
     public boolean contains(String s){
@@ -432,6 +463,21 @@ class FollowSet extends FirstSet{
 
     public FollowSet(String s){
         nonTerminal = s;
+    }
+
+    public boolean add(FollowSet fs){
+
+        boolean result = false;
+        ArrayList<String> copySet = fs.firsts;
+
+        for(String str : copySet){
+            if(!this.firsts.contains(str)){
+                firsts.add(str);
+                result = true;
+            }
+        }
+
+        return result;
     }
 
 }

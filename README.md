@@ -1,6 +1,6 @@
 
 ========================================
-GRAMMAR HELPER 1.0
+GRAMMAR HELPER 1.0.2
     written by Spence Southard
     University of North Florida, 2015
 ========================================
@@ -16,3 +16,9 @@ A -> a | B | @
 B -> b | CD
 C -> c | @
 D -> d
+
+
+
+
+Update 1.0.2:
+    -Fixed issue with follow pass 1

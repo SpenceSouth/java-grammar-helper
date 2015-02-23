@@ -1,5 +1,6 @@
 S -> AB | B
-A -> a | BaCh | @
+A -> a | BE* | @
 B -> b | CD
 C -> c | @
 D -> d
+E -> @

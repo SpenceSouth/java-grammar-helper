@@ -261,10 +261,16 @@ class Grammar{
                                 while(getFirsts(p.charAt(j + count) + "").contains("@") && ((j + count) < current.getProductionArray().get(i).length())){
 
                                     if(j+count == p.length()-1) break;
-
-                                    temp = getFirsts(p.charAt(j + ++count) + "");
-                                    temp.remove("@");
-                                    hs.addAll(temp);
+                                    //System.out.println(p.charAt(j) + " is looking at " + p.charAt(j+count));
+                                    
+                                    if(isNonTerminal(p.charAt(j + ++count) + "")){
+                                        temp = getFirsts(p.charAt(j + count) + "");
+                                        temp.remove("@");
+                                        hs.addAll(temp);                                        
+                                    }
+                                    else{
+                                        hs.add(p.charAt(j+count) + "");
+                                    }
 
                                 }
 

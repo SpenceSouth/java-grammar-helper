@@ -1,37 +1,23 @@
-S -> B4
-4 -> B4 | @
-B -> EaC
-C -> 0 | (F)G
-0 -> ; | [c];
+S -> EaD
+A -> EaD | @
+D -> BA | (F){GJ}A
+B -> ; | [c];
 E -> d | b | n
-F -> da9A | bI | na9A
-I -> a9A | @
-A -> ,Ea9A | @
-9 -> [] | @
-G -> {JK}
-J -> Ea0J | @
-K -> LK | @
-N -> e(Q)LU
-U -> fL | @
-O -> g(Q)L
-P -> hH
-H -> Q; | ;
-T -> [Q] | @
-8 -> VZ65 | @
-V -> <D | >D | == | !=
-D -> = | @
-5 -> WZ65 | @
-W -> + | -
-6 -> YZ6 | @
-Y -> * | /
-2 -> Q7 | @
-7 -> ,Q7 | @
-Q -> a1 | (Q)658 | c658 | k658
-1 -> T3 | (2)658
-Z -> (Q) | aX | c | k
-X -> T | (2)
-L -> H | G | N | O | P
-3 -> =M | YZ658 | WZ658 | <DZ65 | >DZ65 | !=Z65 | @
-M -> Q | =Z65
-
-
+F -> EaCK | b
+K -> ,EaCK | @
+C -> [] | @
+G -> EaBG | @
+J -> LJ | @
+L -> M | {GJ} | e(Q)LI | g(Q)L | hM
+M -> Q; | ;
+I -> fL | @
+Q -> aP=Q | ZWHR
+P -> [Q] | @
+R -> VZWH | @
+V -> <N | >N | == | !=
+N -> = | @
+H -> +ZWH | -ZWH | @
+W -> *ZW | /ZW | @
+Z -> (Q) | aP | a(Y) | c | k
+Y -> QU | @
+U -> ,QU | @

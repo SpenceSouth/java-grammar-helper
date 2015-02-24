@@ -1,6 +1,6 @@
-S -> AB | B
-A -> a | BE* | @
-B -> b | CD
-C -> c | @
-D -> d
-E -> @
+X -> S
+S -> Ab | BDC
+A -> @
+B -> a | @
+D -> AC
+C -> a\

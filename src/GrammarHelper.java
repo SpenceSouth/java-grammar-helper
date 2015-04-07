@@ -696,6 +696,7 @@ class Grammar{
             for(int i = lookup.length()-1; i > -1; i--){
                 stack.push(lookup.substring(i,i+1));
             }
+            System.out.println(stack + "\t\t" + parse);
 
         }
 

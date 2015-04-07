@@ -44,40 +44,52 @@ public class GrammarHelper {
             //System.out.println("Grammar is not LL1");
         }
 
+        if(args.length < 2){
+            System.exit(5);
+        }
+
+        grammar.createTable();
+
+        String parse = readInFile(args[1]);
+
     }
 
 
     public static String readInFile(String args){
 
-        String output = "";
-        File file = new File(args);
-        FileReader fr = null;
-        BufferedReader br = null;
-        String temp = "";
+        try {
 
-        try{
-            fr = new FileReader(file);
-            br = new BufferedReader(fr);
-        }
-        catch(FileNotFoundException fnfe){
-            System.out.println("File not found");
-        }
-
-        while(temp != null){
+            String output = "";
+            File file = new File(args);
+            FileReader fr = null;
+            BufferedReader br = null;
+            String temp = "";
 
             try {
-                temp = br.readLine();
-                if(temp == null){
-                    break;
-                }
-                output += temp + "\n";
+                fr = new FileReader(file);
+                br = new BufferedReader(fr);
+            } catch (FileNotFoundException fnfe) {
+                System.out.println("File not found");
             }
-            catch(Exception ioe){
-                temp = null;
-            }
-        }
 
-        return output;
+            while (temp != null) {
+
+                try {
+                    temp = br.readLine();
+                    if (temp == null) {
+                        break;
+                    }
+                    output += temp + "\n";
+                } catch (Exception ioe) {
+                    temp = null;
+                }
+            }
+
+            return output;
+        }
+        catch (Exception ex){
+            return null;
+        }
 
     }
 }
@@ -86,6 +98,7 @@ class Grammar{
 
     //Decs
     ArrayList<Rule> rules = new ArrayList<Rule>();
+    String[][] table = new String[10][10];
 
 
     public Grammar(){
@@ -500,6 +513,68 @@ class Grammar{
             System.out.println(rule);
         }
     }
+
+    public String createTable(){
+
+        //Terminals need to be stored on table[0][x>0] and transitions need to be stored on [x>0][0]
+        ArrayList<String> terminals = new ArrayList<String>();
+        ArrayList<String> nonterminals = new ArrayList<String>();
+
+        for(Rule rule : rules){
+            nonterminals.add(rule.getTransition());
+        }
+
+        for(Rule rule : rules){
+            for(String str : rule.getProductionArray()){
+                for(int i = 0; i < str.length(); i++) {
+                    if (!terminals.contains(str.charAt(i) + "") && !nonterminals.contains(str.charAt(i) + "")) {
+                        terminals.add(str.charAt(i) + "");
+                    }
+                }
+
+            }
+        }
+
+        terminals.add("$");
+
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+
+                //Add terminals to the table
+                if(i == 0 && j > 0 && j < terminals.size()+1){
+                    table[i][j] = terminals.get(j-1);
+                }
+
+                //Add nonterminals to the table
+                else if(j == 0 && i > 0 && i < nonterminals.size()+1){
+                    table[i][j] = nonterminals.get(i-1);
+                }
+
+                else{
+                    table[i][j] = "";
+                }
+
+
+
+            }
+        }
+
+        //print this for testing
+
+
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+
+                System.out.print(table[i][j] + "\t");
+
+            }
+
+            System.out.println();
+        }
+
+        return null;
+    }
+
 
 }
 

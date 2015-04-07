@@ -1,23 +1,32 @@
-S -> EaD
-A -> EaD | @
-D -> BA | (F){GJ}A
-B -> ; | [c];
+S -> B4
+4 -> B4 | @
+B -> EaD
+D -> 5 | (F){JK}
+5 -> ; | [c];
 E -> d | b | n
-F -> EaCK | b
-K -> ,EaCK | @
-C -> [] | @
-G -> EaBG | @
-J -> LJ | @
-L -> M | {GJ} | e(Q)LI | g(Q)L | hM
+F -> na76 | da76 | bI
+I -> a76 | @
+6 -> ,Ea76 | @
+7 -> [] | @
+J -> Ea5J | @
+K -> LK | @
+L -> M | {JK} | e(Q)L8 | g(Q)L | hM
 M -> Q; | ;
-I -> fL | @
-Q -> aP=Q | ZWHR
-P -> [Q] | @
-R -> VZWH | @
-V -> <N | >N | == | !=
-N -> = | @
-H -> +ZWH | -ZWH | @
-W -> *ZW | /ZW | @
-Z -> (Q) | aP | a(Y) | c | k
-Y -> QU | @
-U -> ,QU | @
+8 -> fL | @
+Q -> aU | (Q)1 | c1 | k1
+U -> 9X | (2)1
+X -> =3 | YZ1 | WZ1 | <TZPH | >TZPH | !=ZPH | @
+1 -> PHC
+3 -> Q | =ZPH
+9 -> [Q] | @
+C -> VZPH | @
+V -> <T | >T | == | !=
+T -> = | @
+H -> WZPH | @
+W -> + | -
+P -> YZP | @
+Y -> * | /
+Z -> (Q) | aA | c | k
+A -> 9 | (2)
+2 -> QR | @
+R -> ,QR | @

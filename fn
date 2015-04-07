@@ -1,6 +1,6 @@
 X -> S
-S -> Ab | BDC
-A -> @
-B -> a | @
-D -> AC
-C -> a\
+S -> AA | E | cyPK
+A -> aA | b
+E -> e | @
+P -> SeA | bcE | eP | @
+K -> y | eK | pPp | @

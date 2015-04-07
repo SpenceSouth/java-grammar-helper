@@ -37,7 +37,12 @@ public class GrammarHelper {
             System.out.println(fs.toString());
         }
         
-        grammar.isLL1();
+        if(grammar.isLL1()){
+            System.out.println("Grammar is LL1");
+        }
+        else{
+            //System.out.println("Grammar is not LL1");
+        }
 
     }
 
@@ -374,26 +379,79 @@ class Grammar{
 
     }
     
-    public void isLL1(){
+    public boolean isLL1(){
         
         //Get the first and followset
         ArrayList<FirstSet> firstSet = getFirsts();
         ArrayList<FollowSet> followSet = getFollows();
+
+        System.out.println("\n");
         
         //Check each partition of each rule
         for(int i = 0; i < rules.size(); i++){
             
             Rule current = rules.get(i);
-            
-            //Look at each partition
-            for(int j = 0; j < current.getProductionArray().size(); j++){
-                
-                
-                
+
+            if(current.getProductionArray().size() < 2){
+                continue;
+            }
+            else {
+
+                HashSet<String> items = new HashSet<String>();
+
+                //Look at each partition
+                for (int j = 0; j < current.getProductionArray().size(); j++) {
+
+                    //We need to compare the first terminal value, or set of values, to each partition
+                   // System.out.print(current.getTransition() + " -> ");
+                   // System.out.println(getFirstOfPartition(current.getProductionArray().get(j)));
+
+                    for(String str : getFirstOfPartition(current.getProductionArray().get(j))){
+
+                        if(!items.contains(str)){
+                            items.add(str);
+                        }
+                        else{
+                            System.out.println("Not LL1 parseable: " + current.getTransition());
+                            return false;
+                        }
+                    }
+
+                    //Handle the empty string
+                    if(items.contains("@")){
+                        //System.out.println("Need to check the intersect of the follow of " + current.getTransition());
+                        //System.out.println(getFollowsOf(current.getTransition()));
+
+                        for(String str : getFollowsOf(current.getTransition())) {
+                            if (!items.contains(str)) {
+                                items.add(str);
+                            } else {
+                                System.out.println("Not LL1 parseable: " + current.getTransition());
+                                return false;
+                            }
+                        }
+                    }
+
+                }
+
+                //System.out.println(current.getTransition() + " -> " + items);
             }
             
         }
-        
+
+        return true;
+    }
+
+    public ArrayList<String> getFollowsOf(String key){
+        ArrayList<FollowSet> temp = getFollows();
+
+        for(FollowSet f : temp){
+            if(f.nonTerminal.equals(key)){
+                return f.firsts;
+            }
+        }
+
+        return  null;
     }
     
     private ArrayList<String> getFirstOfPartition(String partition){
@@ -435,6 +493,12 @@ class Grammar{
         result.addAll(hs);
         
         return result;
+    }
+
+    public void printRules(){
+        for(Rule rule : rules){
+            System.out.println(rule);
+        }
     }
 
 }

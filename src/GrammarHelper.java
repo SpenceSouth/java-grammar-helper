@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Stack;
 
 /**
  * Created by Spence on 2/19/2015.
@@ -51,6 +52,8 @@ public class GrammarHelper {
         grammar.createTable();
 
         String parse = readInFile(args[1]);
+
+        grammar.parseString(parse);
 
     }
 
@@ -466,6 +469,18 @@ class Grammar{
 
         return  null;
     }
+
+    public ArrayList<String> getFirstOf(String key){
+        ArrayList<FirstSet> temp = getFirsts();
+
+        for(FirstSet f : temp){
+            if(f.nonTerminal.equals(key)){
+                return f.firsts;
+            }
+        }
+
+        return  null;
+    }
     
     private ArrayList<String> getFirstOfPartition(String partition){
         
@@ -536,6 +551,7 @@ class Grammar{
         }
 
         terminals.add("$");
+        terminals.remove("@");
 
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
@@ -559,9 +575,43 @@ class Grammar{
             }
         }
 
-        //print this for testing
+        //Add items into the correct spot in the array[][]
+        for(String transition : nonterminals){
+            //Get partitions that go along with those terminals
+            ArrayList<String> p = getRules(transition);
+            //For each partition belonging to the transition find the terminal that would lead to it.
+            ArrayList<String> f = getFirstOf(transition);
+
+            //Look at each rule to identify the first that would lead to it then update that slot in the table
+            for(String part : p){
+                ArrayList<String> partition_first = getFirstOfPartition(part);
+
+                //We want to place the partition in the table on Transition X Terminal where ever partition_first contains a terminal in f
+                for(String fir : f){
+                    if(fir.equals("@") && partition_first.contains(fir)){
+                        //Get the follow of the current Transition
+                        ArrayList<String> fo = getFollowsOf(transition);
+                        for(String followItem : fo){
+                            int x = searchColumn(transition, table);    //Searches for the transition
+                            int y = searchRow(followItem, table);       //Searches for the terminal
+                            table[x][y] = part;
+                        }
+                    }
+                    else if (partition_first.contains(fir)){
+                        //System.out.println(transition + " -> " + part + " is moved to on " + fir);
+                        int x = searchColumn(transition, table);    //Searches for the transition
+                        int y = searchRow(fir, table);       //Searches for the terminal
+                        table[x][y] = part;
+                        //System.out.println("Should be inserted at " + x + "," + y);
+                    }
+                }
+            }
 
 
+        }
+
+
+        //Print this for testing
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
 
@@ -574,6 +624,96 @@ class Grammar{
 
         return null;
     }
+
+    public ArrayList<String> getRules(String key){
+        for(Rule rule : rules){
+            if(rule.getTransition().equals(key)){
+                return rule.getProductionArray();
+            }
+        }
+
+        return null;
+    }
+
+    private int searchRow(String key, String[][] array){
+        for(int i = 1; i < 10; i++){
+            //System.out.println("Looking at row " + i);
+            if(array[0][i].equals(key)){
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+    private int searchColumn(String key, String[][] array){
+        for(int i = 1; i < 10; i++){
+            //System.out.println("Looking at column " + i);
+            if(array[i][0].equals(key)){
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+    public void parseString(String parse){
+
+        System.out.println("Parsing String");
+        System.out.println("--------------\n");
+
+        Stack<String> stack = new Stack<String>();
+        stack.push("$");
+        stack.push(rules.get(0).getTransition());
+
+        parse = parse.replace("\n","") + "$";
+
+        System.out.println(stack + "\t\t" + parse);
+
+        while(!stack.peek().equals("$") && !parse.substring(0,1).equals("$")){
+
+            //Lookup
+            String lookup;
+            lookup = lookupInTable(stack.peek(), parse.substring(0,1), table);
+            //System.out.println("Lookup is " + lookup);
+
+            if(lookup.equals("")){
+                System.out.println("LL1 could not parse the string");
+                System.out.println(stack.peek() + " | " + parse.substring(0, 1));
+                System.exit(2);
+            }
+
+            if(stack.peek().equals(lookup.substring(0,1))){
+                System.out.println(stack + "\t==\t" + parse);
+                stack.pop();
+                parse = parse.substring(1, parse.length());
+                System.out.println(stack + "\t\t" + parse);
+                continue;
+            }
+
+            stack.pop();
+
+            for(int i = lookup.length()-1; i > -1; i--){
+                stack.push(lookup.substring(i,i+1));
+            }
+
+        }
+
+
+        System.out.println(stack + "\t==\t" + parse);
+        System.out.println("ACCEPT");
+    }
+
+    public String lookupInTable(String transition, String terminal, String array[][]){
+        int y = searchRow(terminal, array);
+        int x = searchColumn(transition, array);
+        return array[x][y];
+    }
+
+    public String[][] getTable(){
+        return table;
+    }
+
 
 
 }

@@ -11,11 +11,11 @@ code in this project for user in any school projects.  This is only intended to 
 
 The program accepts grammars of the following form:
 
-S -> AB | B
-A -> a | B | @
-B -> b | CD
-C -> c | @
-D -> d
+    S -> AB | B
+    A -> a | B | @
+    B -> b | CD
+    C -> c | @
+    D -> d
 
 
 
